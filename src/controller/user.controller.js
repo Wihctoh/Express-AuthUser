@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const buildResponse = require("../helper/buildResponse");
 const { createUser, authUser } = require("../service/user.service");
 
 router.post("/reg", async (req, res) => {
@@ -6,9 +7,9 @@ router.post("/reg", async (req, res) => {
     const { name, surname, email, pwd } = req.body;
     const data = await createUser(name, surname, email, pwd);
 
-    res.status(201).send(data);
+    buildResponse(res, 200, data);
   } catch (error) {
-    res.status(405).send(error.message);
+    buildResponse(res, 404, error.message);
   }
 });
 
@@ -17,9 +18,9 @@ router.post("/auth", async (req, res) => {
     const { email, pwd } = req.body;
     const data = await authUser(email, pwd);
 
-    res.status(201).send(data);
+    buildResponse(res, 200, data);
   } catch (error) {
-    res.status(405).send(error.message);
+    buildResponse(res, 404, error.message);
   }
 });
 
