@@ -1,8 +1,10 @@
-const router = require("express").Router();
-const buildResponse = require("../helper/buildResponse");
-const { createUser, authUser } = require("../service/user.service");
+const router = require('express').Router();
+const createToken = require('../helper/jwt');
+const buildResponse = require('../helper/buildResponse');
+const { isValidUserData } = require('../helper/validation');
+const { createUser, authUser } = require('../service/user.service');
 
-router.post("/reg", async (req, res) => {
+router.post('/reg', isValidUserData, async (req, res) => {
   try {
     const { name, surname, email, pwd } = req.body;
     const data = await createUser(name, surname, email, pwd);
@@ -13,10 +15,13 @@ router.post("/reg", async (req, res) => {
   }
 });
 
-router.post("/auth", async (req, res) => {
+router.post('/auth', isValidUserData, async (req, res) => {
   try {
     const { email, pwd } = req.body;
     const data = await authUser(email, pwd);
+    const token = createToken(data);
+
+    res.setHeader('authorization', [`bearer ${token}`]);
 
     buildResponse(res, 200, data);
   } catch (error) {
